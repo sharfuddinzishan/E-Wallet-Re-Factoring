@@ -156,7 +156,7 @@ let formatTime = () => {
     let day = timeNow.split(',')[0].split(' ')[0];
     let month = timeNow.split(',')[0].split(' ')[1];
     [day, month] = [month, day];
-    return day + ' ' + month + ',' + hourMinute;
+    return `${day} ${month}, ${hourMinute}`;
 }
 
 // Function Calls when Page is opened
