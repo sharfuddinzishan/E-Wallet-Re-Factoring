@@ -13,18 +13,6 @@ const transactionHistory = document.getElementById('transactionHistory');
 const inputError = document.getElementById('inputError');
 const statementClear = document.getElementById('statementClear');
 
-/*****************************************
- * When Clear Button Triggered
- * **************************** ********/
-statementClear.addEventListener('click', clearTransaction);
-function clearTransaction() {
-    let promptMessage = confirm('Do You Want To Clear All Transaction History?');
-    if (promptMessage) {
-        if (localStorage.getItem("eWallet")) localStorage.removeItem("eWallet");
-        clearInput();
-        onLoadPage();
-    }
-}
 /********************************************
  * When Submit Button Triggered
  * **************************************** */
@@ -43,18 +31,33 @@ function invokeTransaction() {
     displayInputError(0);
     // Clear Input Fields 
     clearInput();
-    // Update localStorage Statement Key
-    updateToLS(getLocalDataAsObject(), typeInput, detailsInput, amountInput, new Date().toDateString());
-    // Update Page Balance and Statement Section 
+    // Update localStorage
+    updateToLS(getLocalDataAsObject(), typeInput, detailsInput, amountInput, formatTime());
+    // Show Balance info in page
     showBalance(getLocalDataAsObject());
     showStatements(getLocalDataAsObject());
 }
+/*****************************************
+ * When Clear Button Triggered
+ * **************************** ********/
+statementClear.addEventListener('click', clearTransaction);
+function clearTransaction() {
+    let promptMessage = confirm('Do You Want To Clear All Transaction History?');
+    if (promptMessage) {
+        if (localStorage.getItem("eWallet"))
+            localStorage.removeItem("eWallet");
+        clearInput();
+
+        onLoadPage();
+    }
+}
 /*************************************
  * onLoad Page Function
+ * Methods Executed when page is opened or reloaded
  * ********************************* */
 let onLoadPage = () => {
-    // Disable Display Error Message
     displayInputError(0);
+    clearInput();
     // Display Data from localStorage to Page
     showBalance(getLocalDataAsObject());
     showStatements(getLocalDataAsObject());
@@ -67,6 +70,7 @@ let clearInput = () => {
     transactionDetails.value = '';
     transactionAmount.value = '';
 }
+
 /*****************************************
  * Get Item as object From Local Storage
  * ************************************ */
@@ -74,7 +78,7 @@ let getLocalDataAsObject = () => {
     return JSON.parse(getLocalStorage());
 }
 /*****************************************
- * Get Item From Local Storage
+ * Get Key From Local Storage
  * ************************************ */
 let getLocalStorage = () => {
     if (!localStorage.getItem("eWallet")) {
@@ -82,6 +86,9 @@ let getLocalStorage = () => {
     }
     return localStorage.getItem("eWallet");
 }
+/*****************************************
+ * Set Values to Local Storage
+ * ************************************ */
 let updateToLS = (eWalletAsArray, transactionType, details, amount, transactionTime) => {
     let type = (transactionType == 1) ? '+' : '-';
     let walletObj = { type, details, amount, transactionTime };
@@ -89,8 +96,7 @@ let updateToLS = (eWalletAsArray, transactionType, details, amount, transactionT
     localStorage.setItem('eWallet', JSON.stringify(eWalletAsArray));
 }
 /******************************************
- * Update Page Information for 
- * Balance and Transaction History
+ * Show Balance and Transaction History
  * ************************************* */
 let showBalance = eWalletAsArray => {
     let income = eWalletAsArray.filter(wallet => wallet.type === '+').reduce((sum, item) => sum += item.amount, 0);
@@ -131,8 +137,27 @@ let displayInputError = (isDisplayed) => {
         inputError.classList.toggle('d-none', true)
     }
 }
+/******************************************
+ * Text Formatting Section
+ * ************************** *************/
 let formatAmount = amount => {
     return amount.toLocaleString();
 }
+let formatTime = () => {
+    // Set Format as Sep 09, 02:07 AM
+    const timeNow = new Date().toLocaleTimeString('us', {
+        month: "short",
+        day: "2-digit",
+        minute: "2-digit",
+        hour: "2-digit"
+    });
+    // Get Format like 09 Sep, 02:07 AM
+    let hourMinute = timeNow.split(',')[1];
+    let day = timeNow.split(',')[0].split(' ')[0];
+    let month = timeNow.split(',')[0].split(' ')[1];
+    [day, month] = [month, day];
+    return day + ' ' + month + ',' + hourMinute;
+}
+
 // Function Calls when Page is opened
 onLoadPage();
