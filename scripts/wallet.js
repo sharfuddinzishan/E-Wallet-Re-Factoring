@@ -101,9 +101,9 @@ let showBalance = eWalletAsArray => {
         `${header.classList.toggle("bg-danger", true)} ${header.classList.toggle("bg-success", false)}`
         : `${header.classList.toggle("bg-danger", false)} ${header.classList.toggle("bg-success", true)}`;
 
-    totalBalance.innerText = balance;
-    totalIncome.innerText = income;
-    totalExpenses.innerText = expense;
+    totalBalance.innerText = formatAmount(balance);
+    totalIncome.innerText = formatAmount(income);
+    totalExpenses.innerText = formatAmount(expense);
 }
 let showStatements = eWalletAsArray => {
     transactionHistory.innerHTML = "";
@@ -113,7 +113,7 @@ let showStatements = eWalletAsArray => {
         listItem.innerHTML = `
             <div class="d-flex flex-column flex-sm-row justify-content-between">
                 <h5 class="mb-1 fw-bold">${statement.details}</h5>
-                <small class="${statement.type === '+' ? `text-success` : `text-danger`} fw-bold fs-3">${statement.type + '$' + statement.amount}</small>
+                <small class="${statement.type === '+' ? `text-success` : `text-danger`} fw-bold fs-3">${statement.type + '$' + formatAmount(statement.amount)}</small>
             </div>
             <small class="text-muted">${statement?.transactionTime}</small>
             `
@@ -130,6 +130,9 @@ let displayInputError = (isDisplayed) => {
     else {
         inputError.classList.toggle('d-none', true)
     }
+}
+let formatAmount = amount => {
+    return amount.toLocaleString();
 }
 // Function Calls when Page is opened
 onLoadPage();
