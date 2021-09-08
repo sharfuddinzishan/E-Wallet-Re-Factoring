@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eWallet</title>
+    <!-- Font Awesome  -->
+    <script src="https://kit.fontawesome.com/ff4a61c743.js" crossorigin="anonymous"></script>
+    <!-- favicon  -->
+    <link rel="icon" href="images/icons/e-wallet favicon.png" type="image/png" sizes="16x16">
+    <!-- Boostrap-5 CSS File  -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- Custom CSS File  -->
+    <link rel="stylesheet" href="stylesheets/wallet.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- header section  -->
+        <header id="header" class="bg-gradient pb-3">
+            <!-- Logo Text Section  -->
+            <nav class="navbar navbar-expand-sm navbar-light">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#">
+                        <img src="images/icons/e-wallet logo.png" alt="" width="50" height="50" class="d-inline-block">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+                        <span class="text-light logo-text fst-italic fs-1 ps-3">eWallet</span>
+                    </div>
+                </div>
+            </nav>
+            <!-- Total Balance -->
+            <div class="text-light fs-4 text-center">
+                <p>Total Balance</p>
+                <p id="totalBalance" class="fs-1 fw-bold"></p>
+            </div>
+            <!-- Income and Expense  -->
+            <div class="row justify-content-around gy-2">
+                <!-- Income  -->
+                <div class="col-11 col-sm-4">
+                    <div class="card border-dark">
+                        <div class="px-1 card-body text-center fs-3">
+                            <p id="totalIncome" class="fw-bold text-success"></p>
+                            <p class="text-muted">Incomes</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Expanses -->
+                <div class="col-11 col-sm-4">
+                    <div class="card border-dark">
+                        <div class="px-1 card-body text-center fs-3">
+                            <p id="totalExpenses" class="fw-bold text-danger"></p>
+                            <p class="text-muted">Expenses</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Amount Input section  -->
+        <section class="bg-light shadow-lg">
+            <!-- Transaction Type Note Amount -->
+            <div class="row py-2">
+                <div class="col-10 mx-auto">
+                    <div class="row g-1">
+                        <!-- Transaction Type  -->
+                        <div class="mx-auto col-10 col-md-2">
+                            <select id="transactionType" class="form-select">
+                                <option selected value="1">+</option>
+                                <option value="0">-</option>
+                            </select>
+                        </div>
+                        <!-- Transaction Note  -->
+                        <div class="mx-auto col-10 col-md-7">
+                            <input id="transactionNote" type="text" class="form-control" placeholder="Add Notes">
+                        </div>
+                        <!-- Amount  -->
+                        <div class="mx-auto col-10 col-md-3">
+                            <input id="transactionAmount" type="number" min="1" class="form-control"
+                                placeholder="Amount">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Button Section  -->
+            <div class="row py-2">
+                <div class="col-10 col-md-3 col-sm-4 mx-auto">
+                    <div class="d-grid gap-2">
+                        <!-- Submit Button  -->
+                        <button id="transactionSubmit" class="btn btn-outline-secondary" type="button">
+                            <span><i class="far fa-check-circle"></i></span>
+                        </button>
+                        <!-- Clear Button  -->
+                        <button id="statementClear" class="btn btn-warning">
+                            <span class="text-danger fw-bold">Clear?</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Error Input  -->
+            <div id="inputError" class="text-center pt-1 pb-3 d-none">
+                <small class="text-danger fw-bold fst-italic">Invalid Request</small>
+            </div>
+        </section>
+        <!-- Transaction History Section  -->
+        <section class="mt-3">
+            <div class="row">
+                <div class="col-10 col-sm-8 mx-auto">
+                    <div id="transactionHistory" class="list-group list-group-flush rounded-3 shadow-lg mb-2">
+                        <!-- Single History List Item -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <!-- Custom JS File  -->
+    <script src="scripts/wallet.js"></script>
+
+</html>
