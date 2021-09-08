@@ -44,9 +44,10 @@ function invokeTransaction() {
     // Clear Input Fields 
     clearInput();
     // Update localStorage Statement Key
-    updateToLS(getLocalDataAsObject(), typeInput, detailsInput, amountInput, new Date());
+    updateToLS(getLocalDataAsObject(), typeInput, detailsInput, amountInput, new Date().toDateString());
     // Update Page Balance and Statement Section 
     showBalance(getLocalDataAsObject());
+    showStatements(getLocalDataAsObject());
 }
 /*************************************
  * onLoad Page Function
@@ -56,7 +57,7 @@ let onLoadPage = () => {
     displayInputError(0);
     // Display Data from localStorage to Page
     showBalance(getLocalDataAsObject());
-    // statementSectionUpdate(getLocalDataAsObject().statementParse);
+    showStatements(getLocalDataAsObject());
 }
 /*************************************
  * Clear Input fields
@@ -91,9 +92,9 @@ let updateToLS = (eWalletAsArray, transactionType, details, amount, transactionT
  * Update Page Information for 
  * Balance and Transaction History
  * ************************************* */
-let showBalance = walletObj => {
-    let income = walletObj.filter(wallet => wallet.type === '+').reduce((sum, item) => sum += item.amount, 0);
-    let expense = walletObj.filter(wallet => wallet.type === '-').reduce((sum, item) => sum += item.amount, 0);
+let showBalance = eWalletAsArray => {
+    let income = eWalletAsArray.filter(wallet => wallet.type === '+').reduce((sum, item) => sum += item.amount, 0);
+    let expense = eWalletAsArray.filter(wallet => wallet.type === '-').reduce((sum, item) => sum += item.amount, 0);
     let balance = income - expense;
 
     balance <= 0 ?
@@ -104,17 +105,17 @@ let showBalance = walletObj => {
     totalIncome.innerText = income;
     totalExpenses.innerText = expense;
 }
-let statementSectionUpdate = statementsArray => {
+let showStatements = eWalletAsArray => {
     transactionHistory.innerHTML = "";
-    statementsArray.forEach(statement => {
+    eWalletAsArray.forEach(statement => {
         let listItem = document.createElement('li');
         listItem.className = "list-group-item list-group-item-action text-break";
         listItem.innerHTML = `
             <div class="d-flex flex-column flex-sm-row justify-content-between">
-                <h5 class="mb-1 fw-bold">${statement.summary}</h5>
+                <h5 class="mb-1 fw-bold">${statement.details}</h5>
                 <small class="${statement.type === '+' ? `text-success` : `text-danger`} fw-bold fs-3">${statement.type + '$' + statement.amount}</small>
             </div>
-            <small class="text-muted">${statement.time}</small>
+            <small class="text-muted">${statement?.transactionTime}</small>
             `
         transactionHistory.appendChild(listItem);
     });
