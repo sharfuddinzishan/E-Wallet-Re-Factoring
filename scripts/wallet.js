@@ -6,7 +6,7 @@ const totalBalance = document.getElementById('totalBalance');
 const totalIncome = document.getElementById('totalIncome');
 const totalExpenses = document.getElementById('totalExpenses');
 const transactionType = document.getElementById('transactionType');
-const transactionNote = document.getElementById('transactionNote');
+const transactionDetails = document.getElementById('transactionDetails');
 const transactionAmount = document.getElementById('transactionAmount');
 const transactionSubmit = document.getElementById('transactionSubmit');
 const transactionHistory = document.getElementById('transactionHistory');
@@ -20,8 +20,7 @@ statementClear.addEventListener('click', clearTransaction);
 function clearTransaction() {
     let promptMessage = confirm('Do You Want To Clear All Transaction History?');
     if (promptMessage) {
-        if (localStorage.getItem("wallet")) localStorage.removeItem("wallet");
-        if (localStorage.getItem("statement")) localStorage.removeItem("statement");
+        if (localStorage.getItem("eWallet")) localStorage.removeItem("eWallet");
         clearInput();
         onLoadPage();
     }
@@ -33,9 +32,9 @@ transactionSubmit.addEventListener('click', invokeTransaction);
 function invokeTransaction() {
     // Get inputs and Validate
     let typeInput = parseInt(transactionType.value);
-    let noteInput = transactionNote.value;
+    let detailsInput = transactionDetails.value;
     let amountInput = parseInt(transactionAmount.value);
-    if (!noteInput || amountInput <= 0) {
+    if (!detailsInput || amountInput <= 0) {
         // Show Error 
         displayInputError(1);
         return;
@@ -45,12 +44,9 @@ function invokeTransaction() {
     // Clear Input Fields 
     clearInput();
     // Update localStorage Statement Key
-    updateStatement(getLocalAsObject().statementParse, typeInput, amountInput, noteInput, new Date().toUTCString());
-    // Update localStorage Wallet Key 
-    updateWallet(getLocalAsObject().walletParse, typeInput, amountInput);
+    updateToLS(getLocalDataAsObject(), typeInput, detailsInput, amountInput, new Date());
     // Update Page Balance and Statement Section 
-    balanceSectionUpdate(getLocalAsObject().walletParse);
-    statementSectionUpdate(getLocalAsObject().statementParse);
+    showBalance(getLocalDataAsObject());
 }
 /*************************************
  * onLoad Page Function
@@ -59,85 +55,51 @@ let onLoadPage = () => {
     // Disable Display Error Message
     displayInputError(0);
     // Display Data from localStorage to Page
-    balanceSectionUpdate(getLocalAsObject().walletParse);
-    statementSectionUpdate(getLocalAsObject().statementParse);
+    showBalance(getLocalDataAsObject());
+    // statementSectionUpdate(getLocalDataAsObject().statementParse);
 }
 /*************************************
  * Clear Input fields
  * ********************************* */
 let clearInput = () => {
     transactionType.value = 1;
-    transactionNote.value = '';
+    transactionDetails.value = '';
     transactionAmount.value = '';
 }
 /*****************************************
  * Get Item as object From Local Storage
  * ************************************ */
-let getLocalAsObject = () => {
-    return {
-        walletParse: JSON.parse(getWallet()),
-        statementParse: JSON.parse(getStatement())
-    }
+let getLocalDataAsObject = () => {
+    return JSON.parse(getLocalStorage());
 }
 /*****************************************
- * Get Item as JSON Stringify From Local Storage
+ * Get Item From Local Storage
  * ************************************ */
-let getWallet = () => {
-    if (localStorage.getItem("wallet"))
-        return localStorage.getItem("wallet");
-    else {
-        const walletInfo = {
-            income: 0,
-            expense: 0,
-            balance: 0
-        };
-        localStorage.setItem('wallet', JSON.stringify(walletInfo));
-        return localStorage.getItem("wallet");
+let getLocalStorage = () => {
+    if (!localStorage.getItem("eWallet")) {
+        localStorage.setItem('eWallet', "[]");
     }
+    return localStorage.getItem("eWallet");
 }
-let getStatement = () => {
-    if (localStorage.getItem("statement"))
-        return localStorage.getItem("statement");
-    else {
-        const statementInfo = [];
-        localStorage.setItem('statement', JSON.stringify(statementInfo));
-        return localStorage.getItem("statement");
-    }
-}
-/*****************************************
- * Update Local Storage
- * ************************************* */
-let updateWallet = (walletObj, actionType, amountGiven) => {
-    if (actionType) {
-        walletObj.income += amountGiven;
-        walletObj.balance = walletObj.income - walletObj.expense;
-    }
-    else {
-        walletObj.expense += amountGiven;
-        walletObj.balance = walletObj.income - walletObj.expense;
-    }
-    localStorage.setItem('wallet', JSON.stringify(walletObj));
-    // return walletObj;
-}
-let updateStatement = (statementsArray, typeTransaction, amountRequest, textSummary, triggerTime) => {
-    let statementObj = {};
-    statementObj.summary = textSummary;
-    statementObj.time = triggerTime;
-    statementObj.amount = amountRequest;
-    statementObj.type = typeTransaction == 1 ? '+' : '-';
-    statementsArray.unshift(statementObj);
-    localStorage.setItem('statement', JSON.stringify(statementsArray));
-    // return statementsArray;
+let updateToLS = (eWalletAsArray, transactionType, details, amount, transactionTime) => {
+    let type = (transactionType == 1) ? '+' : '-';
+    let walletObj = { type, details, amount, transactionTime };
+    eWalletAsArray.unshift(walletObj);
+    localStorage.setItem('eWallet', JSON.stringify(eWalletAsArray));
 }
 /******************************************
  * Update Page Information for 
  * Balance and Transaction History
  * ************************************* */
-let balanceSectionUpdate = walletObj => {
-    let { income, expense, balance } = walletObj;
+let showBalance = walletObj => {
+    let income = walletObj.filter(wallet => wallet.type === '+').reduce((sum, item) => sum += item.amount, 0);
+    let expense = walletObj.filter(wallet => wallet.type === '-').reduce((sum, item) => sum += item.amount, 0);
+    let balance = income - expense;
+
     balance <= 0 ?
         `${header.classList.toggle("bg-danger", true)} ${header.classList.toggle("bg-success", false)}`
         : `${header.classList.toggle("bg-danger", false)} ${header.classList.toggle("bg-success", true)}`;
+
     totalBalance.innerText = balance;
     totalIncome.innerText = income;
     totalExpenses.innerText = expense;
